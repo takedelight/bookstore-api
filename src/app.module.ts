@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserModule } from './user/user.module';
+import { User } from './user/entity/user.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -13,10 +15,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         username: config.getOrThrow<string>('DATABASE_USER'),
         password: config.getOrThrow<string>('DATABASE_PASSWORD'),
         database: config.getOrThrow<string>('DATABASE_NAME'),
-        entities: [__dirname + '/../**/*.entity.{js,ts}'],
+        entities: [User],
         synchronize: true,
       }),
     }),
+    UserModule,
   ],
 })
 export class AppModule {}
