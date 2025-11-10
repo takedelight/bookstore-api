@@ -4,6 +4,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
 import { User } from './user/entity/user.entity';
 import { AuthModule } from './auth/auth.module';
+import { JwtModule } from '@nestjs/jwt';
+import { parseTime } from './shared/utils/parse-time.util';
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
