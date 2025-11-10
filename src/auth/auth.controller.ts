@@ -10,19 +10,26 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
-  async login(@Res() res: Response, @Body() dto: LoginDto) {
-    return await this.authService.login(res, dto);
+  async login(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Body() dto: LoginDto,
+  ) {
+    return await this.authService.login(res, req, dto);
   }
 
   @Post('register')
-  async register(@Res() res: Response, @Body() dto: RegisterDto) {
-    return await this.authService.register(res, dto);
+  async register(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Body() dto: RegisterDto,
+  ) {
+    return await this.authService.register(res, req, dto);
   }
 
   @Post('logout')
   @UseGuards(AuthGuard('jwt'))
-  logout(@Res() res: Response, @Req() req: Request) {
-    console.log(req.user.email);
+  logout(@Res() res: Response) {
     return this.authService.logout(res);
   }
 }

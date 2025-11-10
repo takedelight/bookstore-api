@@ -4,8 +4,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
 import { User } from './user/entity/user.entity';
 import { AuthModule } from './auth/auth.module';
-import { JwtModule } from '@nestjs/jwt';
-import { parseTime } from './shared/utils/parse-time.util';
+
+import { SessionModule } from './session/session.module';
+import { Session } from './session/entity/session.entity';
 
 @Module({
   imports: [
@@ -19,12 +20,13 @@ import { parseTime } from './shared/utils/parse-time.util';
         username: config.getOrThrow<string>('DATABASE_USER'),
         password: config.getOrThrow<string>('DATABASE_PASSWORD'),
         database: config.getOrThrow<string>('DATABASE_NAME'),
-        entities: [User],
+        entities: [User, Session],
         synchronize: true,
       }),
     }),
     UserModule,
     AuthModule,
+    SessionModule,
   ],
 })
 export class AppModule {}

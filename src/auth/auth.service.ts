@@ -7,6 +7,7 @@ import { RegisterDto } from './dto/register.dto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { parseTime } from 'src/shared/utils/parse-time.util';
+import { SessionService } from 'src/session/session.service';
 
 @Injectable()
 export class AuthService {
@@ -14,6 +15,7 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly sessionService: SessionService,
   ) {}
 
   async validate(email: string, userPassword: string) {
@@ -26,7 +28,7 @@ export class AuthService {
     return user;
   }
 
-  async login(res: Response, dto: LoginDto) {
+  async login(res: Response, req: Request, dto: LoginDto) {
     const user = await this.validate(dto.email, dto.password);
 
     const { accessToken, refreshToken } = await this.generateTokens(
@@ -42,10 +44,16 @@ export class AuthService {
       expires: new Date(Date.now() + 15 * 60 * 1000),
     });
 
+    await this.sessionService.create(
+      user.id,
+      req.ip!,
+      req.headers['user-agent']!,
+    );
+
     res.sendStatus(200);
   }
 
-  async register(res: Response, dto: RegisterDto) {
+  async register(res: Response, req: Request, dto: RegisterDto) {
     const user = await this.userService.create(dto);
 
     const { accessToken, refreshToken } = await this.generateTokens(
@@ -60,6 +68,12 @@ export class AuthService {
     this.setCookie(res, 'access_token', accessToken, {
       expires: new Date(Date.now() + 15 * 60 * 1000),
     });
+
+    await this.sessionService.create(
+      user.id,
+      req.ip!,
+      req.headers['user-agent']!,
+    );
 
     res.sendStatus(200);
   }

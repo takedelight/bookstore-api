@@ -9,12 +9,14 @@ import { JwtModule } from '@nestjs/jwt';
 import { parseTime } from 'src/shared/utils/parse-time.util';
 import { JwtStrategy } from 'src/strategies/jwt.strategy';
 import { PassportModule } from '@nestjs/passport';
+import { Session } from 'src/session/entity/session.entity';
+import { SessionService } from 'src/session/session.service';
 
 @Module({
   controllers: [AuthController],
   imports: [
     PassportModule,
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, Session]),
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
@@ -27,6 +29,12 @@ import { PassportModule } from '@nestjs/passport';
       }),
     }),
   ],
-  providers: [AuthService, UserService, ConfigService, JwtStrategy],
+  providers: [
+    AuthService,
+    UserService,
+    ConfigService,
+    JwtStrategy,
+    SessionService,
+  ],
 })
 export class AuthModule {}
