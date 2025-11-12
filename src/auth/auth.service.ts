@@ -9,6 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import { parseTime } from 'src/shared/utils/parse-time.util';
 import { SessionService } from 'src/session/session.service';
 import { JwtPayload } from 'src/shared/types/jwt-payload.type';
+import { Role } from 'src/user/entity/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -35,6 +36,7 @@ export class AuthService {
     const { accessToken, refreshToken } = await this.generateTokens(
       user.id,
       user.email,
+      user.role,
     );
 
     this.setCookie(res, 'refresh_token', refreshToken, {
@@ -60,6 +62,7 @@ export class AuthService {
     const { accessToken, refreshToken } = await this.generateTokens(
       user.id,
       user.email,
+      user.role,
     );
 
     this.setCookie(res, 'refresh_token', refreshToken, {
@@ -67,7 +70,7 @@ export class AuthService {
     });
 
     this.setCookie(res, 'access_token', accessToken, {
-      expires: new Date(Date.now() + 15 * 60 * 1000),
+      expires: new Date(Date.now() + 31 * 24 * 60 * 60 * 1000),
     });
 
     await this.sessionService.create(
@@ -94,11 +97,14 @@ export class AuthService {
     const { accessToken } = await this.generateTokens(
       payload.sub,
       payload.email,
+      payload.role,
     );
 
-    return this.setCookie(res, 'access_token', accessToken, {
-      expires: new Date(Date.now() + 15 * 60 * 1000),
+    this.setCookie(res, 'access_token', accessToken, {
+      expires: new Date(Date.now() + 31 * 24 * 60 * 60 * 1000),
     });
+
+    return res.sendStatus(200);
   }
 
   logout(res: Response) {
@@ -108,10 +114,14 @@ export class AuthService {
     return res.sendStatus(200);
   }
 
-  async generateTokens(userId: string, email: string) {
-    const accessToken = await this.jwtService.signAsync({ userId, email });
+  async generateTokens(userId: string, email: string, role: Role) {
+    const accessToken = await this.jwtService.signAsync({
+      userId,
+      email,
+      role,
+    });
     const refreshToken = await this.jwtService.signAsync(
-      { userId, email },
+      { userId, email, role },
       {
         expiresIn: parseTime(
           this.configService.getOrThrow<string>('JWT_REFRESH_EXPIRES_IN'),

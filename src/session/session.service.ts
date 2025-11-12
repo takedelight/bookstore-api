@@ -19,6 +19,15 @@ export class SessionService {
     return this.sessionRepository.save(session);
   }
 
+  async get(userId: string) {
+    const sessions = await this.sessionRepository.find({
+      select: ['id', 'ip', 'userAgent', 'createdAt'],
+      where: { user: { id: userId } },
+    });
+
+    return sessions;
+  }
+
   async delete(id: string) {
     return await this.sessionRepository.delete(id);
   }

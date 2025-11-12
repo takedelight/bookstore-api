@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 
 import { SessionModule } from './session/session.module';
 import { Session } from './session/entity/session.entity';
+import { ProfileModule } from './profile/profile.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { Session } from './session/entity/session.entity';
     UserModule,
     AuthModule,
     SessionModule,
+    ProfileModule,
   ],
 })
 export class AppModule {}
