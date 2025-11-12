@@ -15,6 +15,7 @@ export class AuthController {
     @Req() req: Request,
     @Body() dto: LoginDto,
   ) {
+    console.log(dto);
     return await this.authService.login(res, req, dto);
   }
 
@@ -25,6 +26,11 @@ export class AuthController {
     @Body() dto: RegisterDto,
   ) {
     return await this.authService.register(res, req, dto);
+  }
+
+  @Post('refresh')
+  async refresh(@Req() req: Request, @Res() res: Response) {
+    return await this.authService.refresh(req, res);
   }
 
   @Post('logout')

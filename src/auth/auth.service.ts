@@ -8,6 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { parseTime } from 'src/shared/utils/parse-time.util';
 import { SessionService } from 'src/session/session.service';
+import { JwtPayload } from 'src/shared/types/jwt-payload.type';
 
 @Injectable()
 export class AuthService {
@@ -76,6 +77,28 @@ export class AuthService {
     );
 
     res.sendStatus(200);
+  }
+
+  async refresh(req: Request, res: Response) {
+    const refreshToken = req.cookies.refresh_token;
+
+    if (!refreshToken) {
+      throw new UnauthorizedException('refresh token is expired');
+    }
+
+    const payload: JwtPayload = await this.jwtService.verifyAsync(
+      refreshToken,
+      { secret: this.configService.getOrThrow<string>('JWT_REFRESH_SECRET') },
+    );
+
+    const { accessToken } = await this.generateTokens(
+      payload.sub,
+      payload.email,
+    );
+
+    return this.setCookie(res, 'access_token', accessToken, {
+      expires: new Date(Date.now() + 15 * 60 * 1000),
+    });
   }
 
   logout(res: Response) {
