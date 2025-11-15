@@ -19,7 +19,7 @@ export class UserService {
 
   async getAllUsers() {
     return this.userPresitory.find({
-      select: ['id', 'first_name', 'last_name', 'email', 'role'],
+      select: ['id', 'firstName', 'lastName', 'email', 'role'],
     });
   }
 

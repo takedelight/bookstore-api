@@ -15,7 +15,6 @@ export class AuthController {
     @Req() req: Request,
     @Body() dto: LoginDto,
   ) {
-    console.log(dto);
     return await this.authService.login(res, req, dto);
   }
 
@@ -34,7 +33,6 @@ export class AuthController {
   }
 
   @Post('logout')
-  @UseGuards(AuthGuard('jwt'))
   logout(@Res() res: Response) {
     return this.authService.logout(res);
   }

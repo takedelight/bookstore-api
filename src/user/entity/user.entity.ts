@@ -19,10 +19,10 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column('varchar')
-  first_name: string;
-  @Column('varchar', { nullable: true })
-  last_name: string;
+  @Column('varchar', { name: 'first_name' })
+  firstName: string;
+  @Column('varchar', { nullable: true, name: 'last_name' })
+  lastName?: string;
   @Column('varchar', { unique: true })
   email: string;
   @Column('varchar')

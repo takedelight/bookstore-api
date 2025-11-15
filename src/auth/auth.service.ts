@@ -47,11 +47,11 @@ export class AuthService {
       expires: new Date(Date.now() + 15 * 60 * 1000),
     });
 
-    await this.sessionService.create(
-      user.id,
-      req.ip!,
-      req.headers['user-agent']!,
-    );
+    // await this.sessionService.create(
+    //   user.id,
+    //   req.ip!,
+    //   req.headers['user-agent']!,
+    // );
 
     res.sendStatus(200);
   }
@@ -70,7 +70,7 @@ export class AuthService {
     });
 
     this.setCookie(res, 'access_token', accessToken, {
-      expires: new Date(Date.now() + 31 * 24 * 60 * 60 * 1000),
+      expires: new Date(Date.now() + 15 * 60 * 1000),
     });
 
     await this.sessionService.create(
@@ -101,7 +101,7 @@ export class AuthService {
     );
 
     this.setCookie(res, 'access_token', accessToken, {
-      expires: new Date(Date.now() + 31 * 24 * 60 * 60 * 1000),
+      expires: new Date(Date.now() + 15 * 60 * 1000),
     });
 
     return res.sendStatus(200);
@@ -115,11 +115,19 @@ export class AuthService {
   }
 
   async generateTokens(userId: string, email: string, role: Role) {
-    const accessToken = await this.jwtService.signAsync({
-      userId,
-      email,
-      role,
-    });
+    const accessToken = await this.jwtService.signAsync(
+      {
+        userId,
+        email,
+        role,
+      },
+      {
+        expiresIn: parseTime(
+          this.configService.getOrThrow<string>('JWT_ACCESS_EXPIRES_IN'),
+        ),
+        secret: this.configService.getOrThrow<string>('JWT_ACCESS_SECRET'),
+      },
+    );
     const refreshToken = await this.jwtService.signAsync(
       { userId, email, role },
       {
@@ -144,7 +152,7 @@ export class AuthService {
       httpOnly: true,
       sameSite: 'lax',
       domain: this.configService.getOrThrow<string>('COOKIE_DOMAIN'),
-      secure: this.configService.getOrThrow<boolean>('COOKIE_SECURE'),
+      secure: false,
     });
   }
 }

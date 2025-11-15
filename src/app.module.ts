@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { SessionModule } from './session/session.module';
 import { Session } from './session/entity/session.entity';
 import { ProfileModule } from './profile/profile.module';
+import { LogMiddleware } from './shared/middlewares/log.middleware';
 
 @Module({
   imports: [
@@ -31,4 +32,8 @@ import { ProfileModule } from './profile/profile.module';
     ProfileModule,
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LogMiddleware).forRoutes('*');
+  }
+}

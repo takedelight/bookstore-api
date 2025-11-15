@@ -35,8 +35,6 @@ async function bootstrap() {
     origin: configService.getOrThrow<string>('FRONTEND_URL'),
   });
 
-  app.setGlobalPrefix('api/v1');
-
   await app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
 }
 bootstrap().catch((err) => console.error(err));
